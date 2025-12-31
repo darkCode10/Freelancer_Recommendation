@@ -1,5 +1,3 @@
-# Freelancer Recommendation System - Dependencies
-
 # Core ML Libraries
 scikit-learn
 pandas
@@ -10,11 +8,11 @@ fastapi
 uvicorn[standard]
 pydantic
 
+# Supabase
+supabase
+
+# Environment Variables
+python-dotenv
+
 # Additional utilities
 python-multipart
-
-# Optional: for better logging
-colorama
-
-
-

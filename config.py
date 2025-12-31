@@ -1,6 +1,12 @@
 # Simple Configuration File
+import os
 
-DATA_PATH = "final_dataset.csv"
+# Supabase credentials (from environment variables)
+SUPABASE_URL = os.getenv('SUPABASE_URL', 'your-supabase-url')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY', 'your-supabase-key')
+SUPABASE_TABLE = os.getenv('SUPABASE_TABLE', 'freelancers')
+
+# Model settings
 MODEL_PATH = "models/model.pkl"
 
 # How important is each factor?
@@ -11,4 +17,4 @@ WEIGHTS = {
 }
 
 # API settings
-API_PORT = 8000
+API_PORT = int(os.getenv('PORT', 8000))

@@ -1,117 +1,159 @@
 # Freelancer Recommendation System
 
-Simple recommendation system for finding freelancers based on skills.
+A simple machine learning system that recommends freelancers based on skills, rating, and experience.
 
-## Quick Start
+## Features
+
+- **TF-IDF + Cosine Similarity** for skill matching
+- **Weighted scoring** (Skills 50%, Rating 30%, Experience 20%)
+- **Real-time data** from Supabase
+- **FastAPI** backend for easy integration
+
+## Setup
+
+### 1. Install Dependencies
 
 ```bash
-# 1. Install
 pip install -r requirements.txt
+```
 
-# 2. Train
+### 2. Configure Supabase
+
+Create `.env` file (use `env.example` as template):
+
+```env
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_KEY=your-anon-key-here
+SUPABASE_TABLE=freelancers
+PORT=8000
+```
+
+### 3. Database Setup
+
+Your Supabase needs two tables:
+
+**freelancers table:**
+- `id` (uuid)
+- `username` (text)
+- `skills` (text[] array)
+- `experience` (integer)
+
+**freelancer_reviews table:**
+- `freelancer` (uuid, foreign key to freelancers.id)
+- `stars` (float)
+
+**Enable RLS policies for anonymous read access:**
+
+```sql
+CREATE POLICY "Allow anonymous read freelancers"
+ON freelancers FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Allow anonymous read reviews"
+ON freelancer_reviews FOR SELECT TO anon USING (true);
+```
+
+### 4. Train Model
+
+```bash
 python train.py
+```
 
-# 3. Run
+This creates `models/model.pkl` from `final_dataset.csv`.
+
+### 5. Start Server
+
+```bash
 python main.py
 ```
 
-Server runs at: **http://localhost:8000**
+Server runs on `http://localhost:8000`
 
 ## API Usage
 
-### Endpoint: POST /recommend
+### Request
 
-**Request:**
-```json
+```bash
+POST /recommend
+Content-Type: application/json
+
 {
-  "skills": ["python", "machine learning"],
+  "skills": ["Python", "Django", "React"],
   "top_n": 5
 }
 ```
 
-**Response:**
+### Response
+
 ```json
 {
   "success": true,
   "total": 5,
   "recommendations": [
     {
-      "id": "FL250879",
+      "id": "uuid",
       "name": "John Doe",
-      "title": "Software Engineer",
-      "score": 0.85,
-      "match": 90.5,
-      "rating": 4.8,
-      "experience": 25,
-      "skills": "Python; Machine Learning; ..."
+      "score": 0.95,
+      "match": 92.5,
+      "rating": 5.0,
+      "experience": 10,
+      "completed_projects": 25,
+      "skills": "Python, Django, React, Node.js"
     }
   ]
 }
 ```
 
-## Integration Examples
+## Integration
 
-### JavaScript (Web/Mobile)
+### Mobile App (React Native)
+
 ```javascript
-const response = await fetch('http://localhost:8000/recommend', {
+const response = await fetch('http://YOUR_SERVER/recommend', {
   method: 'POST',
-  headers: {'Content-Type': 'application/json'},
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    skills: ['python', 'machine learning'],
+    skills: ["Python", "Django"],
     top_n: 5
   })
 });
 const data = await response.json();
-console.log(data.recommendations);
 ```
 
-### React Native (Mobile)
+### Web App (JavaScript)
+
 ```javascript
-fetch('http://YOUR_SERVER:8000/recommend', {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({
-    skills: ['python', 'machine learning'],
-    top_n: 5
-  })
-})
-.then(res => res.json())
-.then(data => {
-  setFreelancers(data.recommendations);
+const response = await axios.post('http://YOUR_SERVER/recommend', {
+  skills: ["Python", "Django"],
+  top_n: 5
 });
+console.log(response.data.recommendations);
 ```
 
-### Python
-```python
-import requests
+## Deployment (Render.com)
 
-response = requests.post('http://localhost:8000/recommend', json={
-    'skills': ['python', 'machine learning'],
-    'top_n': 5
-})
-print(response.json())
-```
-
-### cURL
-```bash
-curl -X POST http://localhost:8000/recommend \
-  -H "Content-Type: application/json" \
-  -d '{"skills": ["python", "machine learning"], "top_n": 5}'
-```
+1. Push code to GitHub
+2. Create new Web Service on Render.com
+3. Set start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+4. Add environment variables (SUPABASE_URL, SUPABASE_KEY, SUPABASE_TABLE)
 
 ## Files
 
-- `train.py` - Train the model (run once)
-- `main.py` - FastAPI server
-- `config.py` - Settings
-- `requirements.txt` - Dependencies
+- `train.py` - Train TF-IDF model on CSV dataset
+- `main.py` - FastAPI server that fetches live Supabase data
+- `config.py` - Configuration and weights
+- `final_dataset.csv` - Training dataset
+- `models/model.pkl` - Trained TF-IDF vectorizer
 
-## Deployment
+## How It Works
 
-Replace `localhost:8000` with your server URL:
-- `http://your-server.com:8000`
-- `https://api.yourapp.com`
+1. **Training (Offline):** TF-IDF learns vocabulary from CSV dataset
+2. **Prediction (Real-time):**
+   - Fetch freelancers from Supabase
+   - JOIN with reviews to calculate average rating
+   - Calculate skill similarity using trained TF-IDF
+   - Score = (0.5 × skills) + (0.3 × rating) + (0.2 × experience)
+   - Return top N freelancers
 
----
+## License
 
-Simple and ready to use! 🚀
+MIT
