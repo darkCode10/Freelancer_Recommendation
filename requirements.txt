@@ -1,0 +1,20 @@
+# Freelancer Recommendation System - Dependencies
+
+# Core ML Libraries
+scikit-learn
+pandas
+numpy
+
+# FastAPI and Server
+fastapi
+uvicorn[standard]
+pydantic
+
+# Additional utilities
+python-multipart
+
+# Optional: for better logging
+colorama
+
+
+
