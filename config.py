@@ -11,9 +11,9 @@ MODEL_PATH = "models/model.pkl"
 
 # How important is each factor? (Skills is HIGHEST priority!)
 WEIGHTS = {
-    "skills": 0.7,      # 70% - Skills match (HIGHEST PRIORITY!)
-    "rating": 0.2,      # 20% - Rating
-    "experience": 0.1   # 10% - Experience
+    "skills": 0.75,      # 70% - Skills match (HIGHEST PRIORITY!)
+    "rating": 0.15,      # 20% - Rating
+    "experience": 0.10   # 10% - Experience
 }
 
 # Minimum skill match required (0-1, where 0.1 = 10%)
