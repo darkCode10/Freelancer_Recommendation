@@ -171,7 +171,7 @@ def get_recommendations(request: RecommendRequest):
         df_filtered = df[valid_mask].copy()
         similarities_filtered = similarities[valid_mask]
         
-        print(f"✅ {len(df_filtered)} freelancers have matching skills (>= {MIN_SKILL_MATCH*100:.0f}%)")
+        print(f"[OK] {len(df_filtered)} freelancers have matching skills (>= {MIN_SKILL_MATCH*100:.0f}%)")
         
         # Calculate final score (skills is 70% weight now!)
         scores = (
@@ -245,7 +245,7 @@ def retrain_model():
         from sklearn.feature_extraction.text import TfidfVectorizer
         import os
         
-        print("🔄 Retraining model on latest Supabase data...")
+        print("[INFO] Retraining model on latest Supabase data...")
         
         # Connect to Supabase
         supabase = create_client(SUPABASE_URL, SUPABASE_KEY)

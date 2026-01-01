@@ -32,10 +32,10 @@ def retrain():
         response = supabase.table("freelancers").select("skills").execute()
         
         if not response.data:
-            print("❌ No data found in Supabase!")
+            print("[ERROR] No data found in Supabase!")
             return False
         
-        print(f"✅ Found {len(response.data)} freelancers")
+        print(f"[OK] Found {len(response.data)} freelancers")
         
         # Convert to DataFrame
         df = pd.DataFrame(response.data)
@@ -51,14 +51,14 @@ def retrain():
         print("3. Processing skills...")
         df['skills_clean'] = df['skills'].apply(process_skills)
         df = df[df['skills_clean'].str.strip() != '']
-        print(f"✅ {len(df)} freelancers with valid skills")
+        print(f"[OK] {len(df)} freelancers with valid skills")
         
         # Train TF-IDF
         print("4. Training TF-IDF vectorizer...")
         vectorizer = TfidfVectorizer(lowercase=True, max_features=500)
         vectorizer.fit(df['skills_clean'])
         
-        print(f"✅ Learned vocabulary of {len(vectorizer.vocabulary_)} unique skills")
+        print(f"[OK] Learned vocabulary of {len(vectorizer.vocabulary_)} unique skills")
         
         # Save model
         print("5. Saving model...")
@@ -73,7 +73,7 @@ def retrain():
             pickle.dump(model_data, f)
         
         print("\n" + "=" * 70)
-        print("✅ Auto-Retrain Complete!")
+        print("[SUCCESS] Auto-Retrain Complete!")
         print("=" * 70)
         print(f"Freelancers: {len(df)}")
         print(f"Vocabulary: {len(vectorizer.vocabulary_)} skills")
@@ -84,7 +84,7 @@ def retrain():
         return True
         
     except Exception as e:
-        print(f"\n❌ Error during retraining: {e}")
+        print(f"\n[ERROR] Error during retraining: {e}")
         import traceback
         traceback.print_exc()
         return False

@@ -21,10 +21,10 @@ print("2. Fetching all freelancers from Supabase...")
 response = supabase.table("freelancers").select("skills").execute()
 
 if not response.data:
-    print("❌ No data found in Supabase! Cannot train model.")
+    print("[ERROR] No data found in Supabase! Cannot train model.")
     exit(1)
 
-print(f"✅ Found {len(response.data)} freelancers")
+print(f"[OK] Found {len(response.data)} freelancers")
 
 # Convert to DataFrame
 df = pd.DataFrame(response.data)
@@ -42,7 +42,7 @@ df['skills_clean'] = df['skills'].apply(process_skills)
 
 # Remove empty skills
 df = df[df['skills_clean'].str.strip() != '']
-print(f"✅ {len(df)} freelancers with valid skills")
+print(f"[OK] {len(df)} freelancers with valid skills")
 
 # Train TF-IDF on ALL Supabase skills
 print("4. Training TF-IDF vectorizer...")
@@ -50,7 +50,7 @@ print("4. Training TF-IDF vectorizer...")
 vectorizer = TfidfVectorizer(lowercase=True, max_features=500)
 vectorizer.fit(df['skills_clean'])
 
-print(f"✅ Learned vocabulary of {len(vectorizer.vocabulary_)} unique skills")
+print(f"[OK] Learned vocabulary of {len(vectorizer.vocabulary_)} unique skills")
 
 # Save model
 print("5. Saving model...")
@@ -65,7 +65,7 @@ with open(MODEL_PATH, 'wb') as f:
     pickle.dump(model_data, f)
 
 print("\n" + "=" * 60)
-print("✅ Training Complete!")
+print("[SUCCESS] Training Complete!")
 print("=" * 60)
 print(f"Model trained on {len(df)} freelancers from Supabase")
 print(f"Vocabulary size: {len(vectorizer.vocabulary_)} skills")
